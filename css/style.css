@@ -7,6 +7,18 @@ body {
 }
 
 table {
-    width: 30%;
+    width: 40%;
+    border-collapse: collapse;
+    position: relative;
 }
+
+td {
+    border: 1px solid black;
+}
+
+.rotate-left {
+    transform: rotate(-45deg);
+}
+
+
 
