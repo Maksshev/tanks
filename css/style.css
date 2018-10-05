@@ -20,5 +20,9 @@ td {
     transform: rotate(-45deg);
 }
 
+.black {
+    background-color: black;
+}
+
 
 
