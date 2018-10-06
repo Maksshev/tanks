@@ -1,11 +1,19 @@
 let body = $('body');
 let table;
 let tableWidth;
+let tdHeight;
+let tdWidth;
 let bombCount = 0;
 let offsetTop;
 let offsetBottom;
 let offsetRight;
 let offsetLeft;
+let obstaclesOffsetLeft = [];
+let obstaclesOffsetRight = [];
+let obstaclesOffsetTop;
+let obstaclesOffsetBottom;
+let obstacles;
+let obstaclesArr = [];
 
 function initField() {
     const rows = new Array(50).fill('');
@@ -19,6 +27,9 @@ function initField() {
     table = $('#table');
     tableWidth = table.width();
     table.height(tableWidth);
+    let td = $('#table td:first-of-type');
+    tdWidth = td.width();
+    tdHeight = td.height();
 }
 
 initField();
@@ -49,7 +60,17 @@ class MainTank {
                 rotateState = -90;
                 if (interval === null) {
                     interval = setInterval(function () {
-                        if (mainTank.offset().left > offsetLeft) {
+                        let flag = obstaclesArr.reduce(function (acc, curr) {
+                            if (curr[2] < mainTank.offset().left || (mainTank.offset().top < curr[1] || mainTank.offset().top > curr[3])) {
+                                curr = 1;
+                            } else {
+                                curr = 0;
+                            }
+                            return acc*curr;
+                        }, 1);
+                        if (mainTank.offset().left > offsetLeft && flag === 1) {
+                            console.log(mainTank.offset().top);
+                            console.log('left' + mainTank.offset().left);
                             mainTank.css({'right': '+=1'});
                         }
                     }, 10);
@@ -89,14 +110,14 @@ class MainTank {
                         }
                     }, 10);
                 }
-            } else if (e.which === 32) {
-                let bomb = new Bomb();
-                bomb.startBomb(rotateState, mainTank.offset(), mainTank.width());
             }
         }).keyup(function (e) {
             if (e.which === 37 || e.which === 38 || e.which === 39 || e.which === 40) {
                 clearInterval(interval);
                 interval = null;
+            } else if (e.which === 32) {
+                let bomb = new Bomb();
+                bomb.startBomb(rotateState, mainTank.offset(), mainTank.width());
             }
         })
     }
@@ -155,6 +176,45 @@ class Bomb {
 
     }
 }
+
+class Obstacles {
+    constructor(position, width, length, type) {
+        this._position = position;
+        this._width = width;
+        this._length = length;
+        this._type = type;
+    }
+
+    set() {
+
+        $(`table tr:eq(${this._position[0]}) td:eq(${this._position[1]})`).addClass('brick');
+        $(`table tr:eq(${this._position[0]}) td:eq(${this._position[1] + 1})`).addClass('brick');
+        $(`table tr:eq(${this._position[0] + 1}) td:eq(${this._position[1] + 1})`).addClass('brick');
+        $(`table tr:eq(${this._position[0] + 2}) td:eq(${this._position[1] + 1})`).addClass('brick');
+        obstacles = $('.brick');
+        obstaclesTransform(obstacles);
+    }
+}
+
+
+function obstaclesTransform(e) {
+
+    for (let i = 0; i < e.length; i++) {
+        let current;
+        const obstacle = $(e[i]);
+        const offset = obstacle.offset();
+        const width = obstacle.width();
+        const height = obstacle.height();
+        current = [offset.left, offset.top, offset.left + width, offset.top + height];
+        obstaclesArr.push(current);
+    }
+    console.log(obstaclesArr);
+
+}
+
+
+let a = new Obstacles([0, 0]);
+a.set();
 
 
 let t = new MainTank();

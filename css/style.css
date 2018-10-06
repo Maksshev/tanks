@@ -10,6 +10,7 @@ table {
     width: 40%;
     border-collapse: collapse;
     position: relative;
+    table-layout: fixed;
 }
 
 td {
@@ -23,6 +24,27 @@ td {
 .black {
     background-color: black;
 }
+
+.brick {
+    background-image: url("../img/brick.svg");
+    background-size: cover;
+}
+
+.metal {
+    background-image: url("../img/metal.svg");
+    background-size: cover;
+}
+
+.grass {
+    background-image: url("../img/grass.svg");
+    background-size: cover;
+}
+
+.water {
+    background-image: url("../img/water.svg");
+    background-size: cover;
+}
+
 
 
 
