@@ -61,14 +61,19 @@ class MainTank {
                 if (interval === null) {
                     interval = setInterval(function () {
                         let flag = obstaclesArr.reduce(function (acc, curr) {
-                            if (curr[2] < mainTank.offset().left || (mainTank.offset().top < curr[1] || mainTank.offset().top > curr[3])) {
+                            if (curr[2] + 2 < mainTank.offset().left || (mainTank.offset().top + mainTank.width() < curr[1] || mainTank.offset().top > curr[3])) {
                                 curr = 1;
                             } else {
-                                curr = 0;
+                                if (curr[2] - mainTank.offset().left < tdWidth) {
+                                    curr = 0;
+                                } else {
+                                    curr = 1;
+                                }
+
                             }
                             return acc*curr;
                         }, 1);
-                        if (mainTank.offset().left > offsetLeft && flag === 1) {
+                        if (mainTank.offset().left > offsetLeft && flag) {
                             console.log(mainTank.offset().top);
                             console.log('left' + mainTank.offset().left);
                             mainTank.css({'right': '+=1'});
@@ -76,12 +81,24 @@ class MainTank {
                     }, 10);
                 }
             } else if (e.which === 38) {
-                mainTank.rotate(-1 * deg);
+                mainTank.rotate({angle: -1 * deg, center: ['48%', '52%']});
                 deg = 0;
                 rotateState = 0;
                 if (interval === null) {
                     interval = setInterval(function () {
-                        if (mainTank.offset().top > offsetTop) {
+                        let flag = obstaclesArr.reduce(function (acc, curr) {
+                            if (curr[3] + 1 < mainTank.offset().top || (mainTank.offset().left + mainTank.width() < curr[0] + 1 || mainTank.offset().left > curr[2] + 1)) {
+                                curr = 1;
+                            } else {
+                                if (curr[3] + 1 - mainTank.offset().top < tdWidth) {
+                                    curr = 0;
+                                } else {
+                                    curr = 1;
+                                }
+                            }
+                            return acc*curr;
+                        }, 1);
+                        if (mainTank.offset().top > offsetTop && flag) {
                             mainTank.css({'top': '-=1'});
                         }
                     }, 10);
@@ -93,7 +110,19 @@ class MainTank {
                 rotateState = 90;
                 if (interval === null) {
                     interval = setInterval(function () {
-                        if ((mainTank.offset().left + mainTank.width()) < offsetRight) {
+                        let flag = obstaclesArr.reduce(function (acc, curr) {
+                            if (curr[0] > mainTank.offset().left + mainTank.width() || (mainTank.offset().top + mainTank.width() < curr[1] || mainTank.offset().top > curr[3])) {
+                                curr = 1;
+                            } else {
+                                if (mainTank.offset().left - curr[0] < tdWidth) {
+                                    curr = 0;
+                                } else {
+                                    curr = 1;
+                                }
+                            }
+                            return acc*curr;
+                        }, 1);
+                        if ((mainTank.offset().left + mainTank.width()) < offsetRight && flag) {
                             mainTank.css({'right': '-=1'});
                         }
                     }, 10);
@@ -105,7 +134,19 @@ class MainTank {
                 rotateState = 180;
                 if (interval === null) {
                     interval = setInterval(function () {
-                        if ((mainTank.offset().top + mainTank.width()) < offsetBottom) {
+                        let flag = obstaclesArr.reduce(function (acc, curr) {
+                            if (curr[1] - 1 > (mainTank.offset().top + mainTank.width()) || (mainTank.offset().left + mainTank.width() < curr[0] + 1 || mainTank.offset().left > curr[2] + 1)) {
+                                curr = 1;
+                            } else {
+                                if ((mainTank.offset().top + mainTank.width() - curr[1] + 1) < tdWidth) {
+                                    curr = 0;
+                                } else {
+                                    curr = 1;
+                                }
+                            }
+                            return acc*curr;
+                        }, 1);
+                        if ((mainTank.offset().top + mainTank.width()) < offsetBottom && flag) {
                             mainTank.css({'top': '+=1'});
                         }
                     }, 10);
@@ -160,19 +201,19 @@ class Bomb {
             let bombOffsetBottom = bombOffsetTop + bomb.width();
             if (bombOffsetTop > offsetTop && bombOffsetLeft > offsetLeft && bombOffsetRight < offsetRight && bombOffsetBottom < offsetBottom) {
                 if (tankRotateState === 90) {
-                    bomb.css('left', '+=1');
+                    bomb.css('left', '+=3');
                 } else if (tankRotateState === 180) {
-                    bomb.css('top', '+=1');
+                    bomb.css('top', '+=3');
                 } else if (tankRotateState === -90) {
-                    bomb.css('left', '-=1');
+                    bomb.css('left', '-=3');
                 } else if (tankRotateState === 0) {
-                    bomb.css('top', '-=1');
+                    bomb.css('top', '-=3');
                 }
             } else {
                 bomb.remove();
                 clearInterval(interval);
             }
-        }, 1)
+        }, 15)
 
     }
 }
@@ -186,19 +227,29 @@ class Obstacles {
     }
 
     set() {
+        for (let i = this._position[0]; i < this._position[0] + this._width; i++) {
+            for (let j = this._position[1]; j < this._position[1] + this._length; j++) {
+                if (this._type === 'brick') {
+                    $(`table tr:eq(${i}) td:eq(${j})`).addClass('brick');
+                } else if (this._type === 'metal') {
+                    $(`table tr:eq(${i}) td:eq(${j})`).addClass('metal');
+                } else if (this._type === 'water') {
+                    $(`table tr:eq(${i}) td:eq(${j})`).addClass('water');
+                } else if (this._type === 'grass') {
+                    $(`table tr:eq(${i}) td:eq(${j})`).addClass('grass');
+                }
+            }
+        }
 
-        $(`table tr:eq(${this._position[0]}) td:eq(${this._position[1]})`).addClass('brick');
-        $(`table tr:eq(${this._position[0]}) td:eq(${this._position[1] + 1})`).addClass('brick');
-        $(`table tr:eq(${this._position[0] + 1}) td:eq(${this._position[1] + 1})`).addClass('brick');
-        $(`table tr:eq(${this._position[0] + 2}) td:eq(${this._position[1] + 1})`).addClass('brick');
-        obstacles = $('.brick');
+
+        obstacles = $('.brick, .metal, .water');
         obstaclesTransform(obstacles);
     }
 }
 
 
 function obstaclesTransform(e) {
-
+    obstaclesArr = [];
     for (let i = 0; i < e.length; i++) {
         let current;
         const obstacle = $(e[i]);
@@ -213,8 +264,58 @@ function obstaclesTransform(e) {
 }
 
 
-let a = new Obstacles([0, 0]);
-a.set();
+const brick1 = new Obstacles([5, 23], 40, 3, 'brick');
+brick1.set();
+
+const metal1 = new Obstacles([0, 23], 5, 3, 'metal');
+metal1.set();
+
+const brick2 = new Obstacles([43, 21], 7, 2, 'brick');
+brick2.set();
+
+const brick3 = new Obstacles([43, 26], 7, 2, 'brick');
+brick3.set();
+
+const metalAi = new Obstacles([4, 32], 1, 3, 'metal');
+metalAi.set();
+
+const metalAi1 = new Obstacles([4, 41], 1, 3, 'metal');
+metalAi1.set();
+
+const metalAi2 = new Obstacles([4, 14], 1, 3, 'metal');
+metalAi2.set();
+
+const metalAi3 = new Obstacles([4, 5], 1, 3, 'metal');
+metalAi3.set();
+
+const water = new Obstacles([15, 5], 2, 12, 'water');
+water.set();
+
+const water1 = new Obstacles([17, 5], 12, 2, 'water');
+water1.set();
+
+const water2 = new Obstacles([29, 5], 2, 12, 'water');
+water2.set();
+
+const water3 = new Obstacles([17, 15], 12, 2, 'water');
+water3.set();
+
+const water4 = new Obstacles([15, 32], 2, 12, 'water');
+water4.set();
+
+const water5 = new Obstacles([17, 32], 12, 2, 'water');
+water5.set();
+
+const water6 = new Obstacles([29, 32], 2, 12, 'water');
+water6.set();
+
+const water7 = new Obstacles([17, 42], 12, 2, 'water');
+water7.set();
+
+
+
+
+
 
 
 let t = new MainTank();
