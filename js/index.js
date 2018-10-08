@@ -78,7 +78,7 @@ class MainTank {
                             console.log('left' + mainTank.offset().left);
                             mainTank.css({'right': '+=1'});
                         }
-                    }, 10);
+                    }, 20);
                 }
             } else if (e.which === 38) {
                 mainTank.rotate({angle: -1 * deg, center: ['48%', '52%']});
@@ -101,7 +101,7 @@ class MainTank {
                         if (mainTank.offset().top > offsetTop && flag) {
                             mainTank.css({'top': '-=1'});
                         }
-                    }, 10);
+                    }, 20);
                 }
             } else if (e.which === 39) {
                 mainTank.rotate(-1 * deg);
@@ -125,7 +125,7 @@ class MainTank {
                         if ((mainTank.offset().left + mainTank.width()) < offsetRight && flag) {
                             mainTank.css({'right': '-=1'});
                         }
-                    }, 10);
+                    }, 20);
                 }
             } else if (e.which === 40) {
                 mainTank.rotate(-1 * deg);
@@ -149,7 +149,7 @@ class MainTank {
                         if ((mainTank.offset().top + mainTank.width()) < offsetBottom && flag) {
                             mainTank.css({'top': '+=1'});
                         }
-                    }, 10);
+                    }, 20);
                 }
             }
         }).keyup(function (e) {
@@ -193,7 +193,7 @@ class Bomb {
             bombOffsetTop = tankOffset.top + tankWidth/2.2;
             bombOffsetLeft = tankOffset.left;
         }
-        bomb.width(tableWidth*0.01).height(tableWidth*0.01).css({position: 'absolute', background: 'black'}).offset({top: bombOffsetTop, left: bombOffsetLeft});
+        bomb.width(tableWidth*0.01).height(tableWidth*0.01).css({position: 'absolute', background: 'grey', borderRadius: '50%'}).offset({top: bombOffsetTop, left: bombOffsetLeft});
         let interval = setInterval(function () {
             let bombOffsetTop = bomb.offset().top;
             let bombOffsetLeft = bomb.offset().left;
@@ -245,6 +245,18 @@ class Obstacles {
         obstacles = $('.brick, .metal, .water');
         obstaclesTransform(obstacles);
     }
+
+    setGrass() {
+        for (let i = this._position[0]; i < this._position[0] + this._width; i++) {
+            for (let j = this._position[1]; j < this._position[1] + this._length; j++) {
+                let td = $(`table tr:eq(${i}) td:eq(${j})`);
+                if (!td.hasClass('brick') && !td.hasClass('metal') && !td.hasClass('water')) {
+                    td.addClass('grass');
+                }
+            }
+        }
+    }
+
 }
 
 
@@ -311,6 +323,12 @@ water6.set();
 
 const water7 = new Obstacles([17, 42], 12, 2, 'water');
 water7.set();
+
+const grass = new Obstacles([17, 7], 12, 8);
+grass.setGrass();
+
+const grass1 = new Obstacles([17, 34], 12, 8);
+grass1.setGrass();
 
 
 
