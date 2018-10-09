@@ -46,6 +46,14 @@ td {
     background-size: cover;
 }
 
+.bang {
+    background-image: url("../img/bang.png")!important;
+    background-size: cover!important;
+    border-radius: 0!important;
+}
+
+
+
 
 
 

@@ -14,6 +14,8 @@ let obstaclesOffsetTop;
 let obstaclesOffsetBottom;
 let obstacles;
 let obstaclesArr = [];
+let obstaclesBomb;
+let obstaclesBombArr = [];
 
 function initField() {
     const rows = new Array(50).fill('');
@@ -37,7 +39,7 @@ initField();
 class MainTank {
     constructor(speed) {
         this.image = `img/tanks_svg/tank-yellow-1.svg`;
-        this.size = tableWidth * 0.06;
+        this.size = tableWidth * 0.055;
     }
 
     setTank() {
@@ -201,13 +203,97 @@ class Bomb {
             let bombOffsetBottom = bombOffsetTop + bomb.width();
             if (bombOffsetTop > offsetTop && bombOffsetLeft > offsetLeft && bombOffsetRight < offsetRight && bombOffsetBottom < offsetBottom) {
                 if (tankRotateState === 90) {
-                    bomb.css('left', '+=3');
+                    let flag = obstaclesBombArr.filter(function (cur) {
+                        if (bombOffsetRight > cur[0] && bombOffsetBottom > cur[1] && bombOffsetTop < cur[3]) {
+                            if (bombOffsetRight - cur[0] < tdWidth) {
+                                return true;
+                            }
+                        }
+                    });
+                    if (flag[0] !== undefined) {
+                        bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop - tdHeight, left: bombOffsetLeft}).fadeOut(700, function () {
+                            this.remove();
+                        });
+                        $(`table tr:eq(${flag[0][4]}) td:eq(${flag[0][5]})`).removeClass('brick');
+                        $(`table tr:eq(${flag[0][4] - 1}) td:eq(${flag[0][5]})`).removeClass('brick');
+                        $(`table tr:eq(${flag[0][4] + 1}) td:eq(${flag[0][5]})`).removeClass('brick');
+                        obstacles = $('.brick, .metal, .water');
+                        obstaclesBomb = $('.brick, .metal');
+                        obstaclesBombTransform(obstaclesBomb);
+                        obstaclesTransform(obstacles);
+                        clearInterval(interval);
+                    } else {
+                        bomb.css('left', '+=3');
+                    }
                 } else if (tankRotateState === 180) {
-                    bomb.css('top', '+=3');
+                    let flag = obstaclesBombArr.filter(function (cur) {
+                        if (bombOffsetBottom > cur[1] && bombOffsetRight > cur[0] && bombOffsetLeft < cur[2]) {
+                            if (bombOffsetBottom - cur[1] < tdHeight) {
+                                return true;
+                            }
+                        }
+                    });
+                    if (flag[0] !== undefined) {
+                        bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop, left: bombOffsetLeft - tdHeight}).fadeOut(700, function () {
+                            this.remove();
+                        });
+                        $(`table tr:eq(${flag[0][4]}) td:eq(${flag[0][5]})`).removeClass('brick');
+                        $(`table tr:eq(${flag[0][4]}) td:eq(${flag[0][5] + 1})`).removeClass('brick');
+                        $(`table tr:eq(${flag[0][4]}) td:eq(${flag[0][5] - 1})`).removeClass('brick');
+                        obstacles = $('.brick, .metal, .water');
+                        obstaclesBomb = $('.brick, .metal');
+                        obstaclesBombTransform(obstaclesBomb);
+                        obstaclesTransform(obstacles);
+                        clearInterval(interval);
+                    } else {
+                        bomb.css('top', '+=3');
+                    }
                 } else if (tankRotateState === -90) {
-                    bomb.css('left', '-=3');
+                    let flag = obstaclesBombArr.filter(function (cur) {
+                        if (bombOffsetLeft < cur[2] && bombOffsetBottom > cur[1] && bombOffsetTop < cur[3]) {
+                            if (cur[2] - bombOffsetLeft < tdWidth) {
+                                return true;
+                            }
+                        }
+                    });
+                    if (flag[0] !== undefined) {
+                        bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop - tdHeight, left: bombOffsetLeft}).fadeOut(700, function () {
+                            this.remove();
+                        });
+                        $(`table tr:eq(${flag[0][4]}) td:eq(${flag[0][5]})`).removeClass('brick');
+                        $(`table tr:eq(${flag[0][4] - 1}) td:eq(${flag[0][5]})`).removeClass('brick');
+                        $(`table tr:eq(${flag[0][4] + 1}) td:eq(${flag[0][5]})`).removeClass('brick');
+                        obstacles = $('.brick, .metal, .water');
+                        obstaclesBomb = $('.brick, .metal');
+                        obstaclesBombTransform(obstaclesBomb);
+                        obstaclesTransform(obstacles);
+                        clearInterval(interval);
+                    } else {
+                        bomb.css('left', '-=3');
+                    }
                 } else if (tankRotateState === 0) {
-                    bomb.css('top', '-=3');
+                    let flag = obstaclesBombArr.filter(function (cur) {
+                        if (bombOffsetTop > cur[3] && bombOffsetRight > cur[0] && bombOffsetLeft < cur[2]) {
+                            if (bombOffsetTop - cur[3] < tdHeight) {
+                                return true;
+                            }
+                        }
+                    });
+                    if (flag[0] !== undefined) {
+                        bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop, left: bombOffsetLeft - tdHeight}).fadeOut(700, function () {
+                            this.remove();
+                        });
+                        $(`table tr:eq(${flag[0][4]}) td:eq(${flag[0][5]})`).removeClass('brick');
+                        $(`table tr:eq(${flag[0][4]}) td:eq(${flag[0][5] + 1})`).removeClass('brick');
+                        $(`table tr:eq(${flag[0][4]}) td:eq(${flag[0][5] - 1})`).removeClass('brick');
+                        obstacles = $('.brick, .metal, .water');
+                        obstaclesBomb = $('.brick, .metal');
+                        obstaclesBombTransform(obstaclesBomb);
+                        obstaclesTransform(obstacles);
+                        clearInterval(interval);
+                    } else {
+                        bomb.css('top', '-=3');
+                    }
                 }
             } else {
                 bomb.remove();
@@ -243,6 +329,8 @@ class Obstacles {
 
 
         obstacles = $('.brick, .metal, .water');
+        obstaclesBomb = $('.brick, .metal');
+        obstaclesBombTransform(obstaclesBomb);
         obstaclesTransform(obstacles);
     }
 
@@ -259,6 +347,22 @@ class Obstacles {
 
 }
 
+function obstaclesBombTransform(e) {
+    obstaclesBombArr = [];
+    for (let i = 0; i < e.length; i++) {
+        let current;
+        const obstacle = $(e[i]);
+        const offset = obstacle.offset();
+        const width = obstacle.width();
+        const height = obstacle.height();
+        const row = obstacle.parent().index();
+        const  column = obstacle.index();
+        current = [offset.left, offset.top, offset.left + width, offset.top + height, row, column];
+        obstaclesBombArr.push(current);
+    }
+    console.log(obstaclesBombArr);
+}
+
 
 function obstaclesTransform(e) {
     obstaclesArr = [];
@@ -271,7 +375,6 @@ function obstaclesTransform(e) {
         current = [offset.left, offset.top, offset.left + width, offset.top + height];
         obstaclesArr.push(current);
     }
-    console.log(obstaclesArr);
 
 }
 
