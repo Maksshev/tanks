@@ -16,6 +16,8 @@ let obstacles;
 let obstaclesArr = [];
 let obstaclesBomb;
 let obstaclesBombArr = [];
+let mainTankImg = `img/tanks_svg/tank-yellow-1.svg`;
+let enemyTankImg = `img/tanks_svg/tank-red-4.svg`;
 
 function initField() {
     const rows = new Array(50).fill('');
@@ -37,21 +39,23 @@ function initField() {
 initField();
 
 class MainTank {
-    constructor(speed) {
-        this.image = `img/tanks_svg/tank-yellow-1.svg`;
+    constructor(image, row, column, rotateState) {
+        this._row = row;
+        this._column = column;
+        this._image = image;
         this.size = tableWidth * 0.055;
+        this._rotateState = rotateState;
     }
 
     setTank() {
-        table.append(`<img id="main_tank" src="${this.image}">`);
+        $(`table tr:eq(${this._row}) td:eq(${this._column})`).append(`<img id="main_tank" src="${this._image}">`);
         const mainTank = $('#main_tank');
-        mainTank.width(this.size).height(this.size).css({position: 'absolute', top: '0'});
+        mainTank.width(this.size).height(this.size).css({position: 'absolute'}).rotate(this._rotateState);
         offsetTop = table.offset().top;
         offsetLeft = table.offset().left;
         offsetBottom = offsetTop + tableWidth;
         offsetRight = offsetLeft + tableWidth;
         let deg = 0;
-        let rotateState = 0;
         let interval = null;
         body.keydown(function (e) {
             deg = 0;
@@ -59,7 +63,7 @@ class MainTank {
                 mainTank.rotate(-1 * deg);
                 mainTank.rotate(-90);
                 deg = -90;
-                rotateState = -90;
+                this._rotateState = -90;
                 if (interval === null) {
                     interval = setInterval(function () {
                         let flag = obstaclesArr.reduce(function (acc, curr) {
@@ -85,7 +89,7 @@ class MainTank {
             } else if (e.which === 38) {
                 mainTank.rotate({angle: -1 * deg, center: ['48%', '52%']});
                 deg = 0;
-                rotateState = 0;
+                this._rotateState = 0;
                 if (interval === null) {
                     interval = setInterval(function () {
                         let flag = obstaclesArr.reduce(function (acc, curr) {
@@ -109,7 +113,7 @@ class MainTank {
                 mainTank.rotate(-1 * deg);
                 mainTank.rotate(90);
                 deg = 90;
-                rotateState = 90;
+                this._rotateState = 90;
                 if (interval === null) {
                     interval = setInterval(function () {
                         let flag = obstaclesArr.reduce(function (acc, curr) {
@@ -133,7 +137,7 @@ class MainTank {
                 mainTank.rotate(-1 * deg);
                 mainTank.rotate(180);
                 deg = 180;
-                rotateState = 180;
+                this._rotateState = 180;
                 if (interval === null) {
                     interval = setInterval(function () {
                         let flag = obstaclesArr.reduce(function (acc, curr) {
@@ -160,7 +164,7 @@ class MainTank {
                 interval = null;
             } else if (e.which === 32) {
                 let bomb = new Bomb();
-                bomb.startBomb(rotateState, mainTank.offset(), mainTank.width());
+                bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width());
             }
         })
     }
@@ -439,6 +443,21 @@ grass1.setGrass();
 
 
 
-let t = new MainTank();
+let t = new MainTank(mainTankImg, 45, 37, 0);
 t.setTank();
+
+let enemy1 = new MainTank(enemyTankImg, 0, 41, 180);
+enemy1.setTank();
+
+let enemy = new MainTank(enemyTankImg, 0, 32, 180);
+enemy.setTank();
+
+let enemy2 = new MainTank(enemyTankImg, 0, 14, 180);
+enemy2.setTank();
+
+let enemy3 = new MainTank(enemyTankImg, 0, 5, 180);
+enemy3.setTank();
+//
+// let enemy2 = new MainTank(enemyTankImg, 0, 13, 180);
+// enemy2.setTank();
 
