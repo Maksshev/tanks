@@ -21,6 +21,8 @@ let enemiesArr = [];
 let mainTankImg = `img/tanks_svg/tank-yellow-1.svg`;
 let enemyTankImg = `img/tanks_svg/tank-red-4.svg`;
 let enemyCount = 1;
+let mainTankArr = [];
+
 
 function initField() {
     const rows = new Array(50).fill('');
@@ -83,8 +85,6 @@ class MainTank {
                             return acc*curr;
                         }, 1);
                         if (mainTank.offset().left > offsetLeft && flag) {
-                            console.log(mainTank.offset().top);
-                            console.log('left' + mainTank.offset().left);
                             mainTank.css({'right': '+=1'});
                         }
                     }, 20);
@@ -166,16 +166,16 @@ class MainTank {
                 clearInterval(interval);
                 interval = null;
             } else if (e.which === 32) {
-                let bomb = new Bomb();
-                bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width());
+                let bomb = new Bomb(true);
+                bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width(), false);
             }
         })
     }
 
     setEnemy() {
         $(`table tr:eq(${this._row}) td:eq(${this._column})`).append(`<img class="${enemyCount} enemy" id="main_tank" src="${this._image}">`);
+        const mainTank = $(`.${enemyCount}`);
         enemyCount++;
-        const mainTank = $('#main_tank');
         mainTank.width(this.size).height(this.size).css({position: 'absolute'}).rotate(this._rotateState);
         offsetTop = table.offset().top;
         offsetLeft = table.offset().left;
@@ -213,8 +213,6 @@ class MainTank {
                             return acc * curr;
                         }, 1);
                         if (mainTank.offset().left > offsetLeft && flag && deg === -90) {
-                            console.log(mainTank.offset().top);
-                            console.log('left' + mainTank.offset().left);
                             mainTank.css({'right': '+=3'});
                         }
                     }, 100);
@@ -311,6 +309,11 @@ class MainTank {
                     }, ran2 * 1000);
                 }
             }
+            let ranBomb = random(0, 1);
+            if (ranBomb) {
+                let bomb = new Bomb();
+                bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width());
+            }
         }, 1000)
     }
 
@@ -318,15 +321,11 @@ class MainTank {
 
 
 class Bomb {
-    constructor(mainTank) {
-        if (mainTank === true) {
-            this.speed = 5;
-        } else {
-            this.speed = 10;
-        }
+    constructor(enemy) {
+        this._enemy = enemy;
     }
 
-    startBomb(tankRotateState, tankOffset, tankWidth) {
+    startBomb(tankRotateState, tankOffset, tankWidth, enemy) {
         table.append(`<div id="bomb${bombCount}"></div>`);
         const bomb = $(`#bomb${bombCount}`);
         bombCount++;
@@ -351,6 +350,8 @@ class Bomb {
             let bombOffsetLeft = bomb.offset().left;
             let bombOffsetRight = bombOffsetLeft + bomb.width();
             let bombOffsetBottom = bombOffsetTop + bomb.width();
+            enemiesTransform();
+            mainTransform();
             if (bombOffsetTop > offsetTop && bombOffsetLeft > offsetLeft && bombOffsetRight < offsetRight && bombOffsetBottom < offsetBottom) {
                 if (tankRotateState === 90) {
                     let flag = obstaclesBombArr.filter(function (cur) {
@@ -360,6 +361,24 @@ class Bomb {
                             }
                         }
                     });
+                    let tankFlag;
+                    if (enemy === false) {
+                        tankFlag = enemiesArr.filter(function (cur) {
+                            if (bombOffsetRight > cur[0] && bombOffsetBottom > cur[1] && bombOffsetTop < cur[3]) {
+                                if (bombOffsetRight - cur[0] < tdWidth) {
+                                    return true;
+                                }
+                            }
+                        });
+                    } else {
+                        tankFlag = mainTankArr.filter(function (cur) {
+                            if (bombOffsetRight > cur[0] && bombOffsetBottom > cur[1] && bombOffsetTop < cur[3]) {
+                                if (bombOffsetRight - cur[0] < tdWidth) {
+                                    return true;
+                                }
+                            }
+                        });
+                    }
                     if (flag[0] !== undefined) {
                         bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop - tdHeight, left: bombOffsetLeft}).fadeOut(700, function () {
                             this.remove();
@@ -371,6 +390,12 @@ class Bomb {
                         obstaclesBomb = $('.brick, .metal');
                         obstaclesBombTransform(obstaclesBomb);
                         obstaclesTransform(obstacles);
+                        clearInterval(interval);
+                    } else if (tankFlag[0] !== undefined) {
+                        bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop - tdHeight, left: bombOffsetLeft}).fadeOut(700, function () {
+                            this.remove();
+                        });
+                        tankFlag[0][4].remove();
                         clearInterval(interval);
                     } else {
                         bomb.css('left', '+=3');
@@ -383,6 +408,24 @@ class Bomb {
                             }
                         }
                     });
+                    let tankFlag;
+                    if (enemy === false) {
+                        tankFlag = enemiesArr.filter(function (cur) {
+                            if (bombOffsetBottom > cur[1] && bombOffsetRight > cur[0] && bombOffsetLeft < cur[2]) {
+                                if (bombOffsetBottom - cur[1] < tankWidth) {
+                                    return true;
+                                }
+                            }
+                        });
+                    } else {
+                        tankFlag = mainTankArr.filter(function (cur) {
+                            if (bombOffsetBottom > cur[1] && bombOffsetRight > cur[0] && bombOffsetLeft < cur[2]) {
+                                if (bombOffsetBottom - cur[1] < tankWidth) {
+                                    return true;
+                                }
+                            }
+                        });
+                    }
                     if (flag[0] !== undefined) {
                         bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop, left: bombOffsetLeft - tdHeight}).fadeOut(700, function () {
                             this.remove();
@@ -394,6 +437,12 @@ class Bomb {
                         obstaclesBomb = $('.brick, .metal');
                         obstaclesBombTransform(obstaclesBomb);
                         obstaclesTransform(obstacles);
+                        clearInterval(interval);
+                    } else if (tankFlag[0] !== undefined) {
+                        bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop - tdHeight, left: bombOffsetLeft}).fadeOut(700, function () {
+                            this.remove();
+                        });
+                        tankFlag[0][4].remove();
                         clearInterval(interval);
                     } else {
                         bomb.css('top', '+=3');
@@ -406,6 +455,24 @@ class Bomb {
                             }
                         }
                     });
+                    let tankFlag;
+                    if (enemy === false) {
+                        tankFlag = enemiesArr.filter(function (cur) {
+                            if (bombOffsetLeft < cur[2] && bombOffsetBottom > cur[1] && bombOffsetTop < cur[3]) {
+                                if (cur[2] - bombOffsetLeft < tankWidth) {
+                                    return true;
+                                }
+                            }
+                        });
+                    } else {
+                        tankFlag = mainTankArr.filter(function (cur) {
+                            if (bombOffsetLeft < cur[2] && bombOffsetBottom > cur[1] && bombOffsetTop < cur[3]) {
+                                if (cur[2] - bombOffsetLeft < tankWidth) {
+                                    return true;
+                                }
+                            }
+                        });
+                    }
                     if (flag[0] !== undefined) {
                         bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop - tdHeight, left: bombOffsetLeft}).fadeOut(700, function () {
                             this.remove();
@@ -418,6 +485,12 @@ class Bomb {
                         obstaclesBombTransform(obstaclesBomb);
                         obstaclesTransform(obstacles);
                         clearInterval(interval);
+                    } else if (tankFlag[0] !== undefined) {
+                        bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop - tdHeight, left: bombOffsetLeft}).fadeOut(700, function () {
+                            this.remove();
+                        });
+                        tankFlag[0][4].remove();
+                        clearInterval(interval);
                     } else {
                         bomb.css('left', '-=3');
                     }
@@ -429,6 +502,24 @@ class Bomb {
                             }
                         }
                     });
+                    let tankFlag;
+                    if (enemy === false) {
+                        tankFlag = enemiesArr.filter(function (cur) {
+                            if (bombOffsetTop > cur[3] && bombOffsetRight > cur[0] && bombOffsetLeft < cur[2]) {
+                                if (bombOffsetTop - cur[3] < tankWidth) {
+                                    return true;
+                                }
+                            }
+                        });
+                    } else {
+                        tankFlag = mainTankArr.filter(function (cur) {
+                            if (bombOffsetTop > cur[3] && bombOffsetRight > cur[0] && bombOffsetLeft < cur[2]) {
+                                if (bombOffsetTop - cur[3] < tankWidth) {
+                                    return true;
+                                }
+                            }
+                        });
+                    }
                     if (flag[0] !== undefined) {
                         bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop, left: bombOffsetLeft - tdHeight}).fadeOut(700, function () {
                             this.remove();
@@ -440,6 +531,12 @@ class Bomb {
                         obstaclesBomb = $('.brick, .metal');
                         obstaclesBombTransform(obstaclesBomb);
                         obstaclesTransform(obstacles);
+                        clearInterval(interval);
+                    } else if (tankFlag[0] !== undefined) {
+                        bomb.addClass('bang').width(tdWidth*3).height(tdHeight*3).offset({top: bombOffsetTop - tdHeight, left: bombOffsetLeft}).fadeOut(700, function () {
+                            this.remove();
+                        });
+                        tankFlag[0][4].remove();
                         clearInterval(interval);
                     } else {
                         bomb.css('top', '-=3');
@@ -510,7 +607,6 @@ function obstaclesBombTransform(e) {
         current = [offset.left, offset.top, offset.left + width, offset.top + height, row, column];
         obstaclesBombArr.push(current);
     }
-    console.log(obstaclesBombArr);
 }
 
 
@@ -528,12 +624,27 @@ function obstaclesTransform(e) {
 
 }
 
-function enemiesTransform(e) {
+function enemiesTransform() {
     enemiesArr = [];
-    for (let i = 0; i < e.length; i++) {
-        let current;
-        const enemy = $(e[i]);
-        const offset = enemy.offset();
+    for (let i = 1; i < enemyCount; i++) {
+        const enemy = $(`.${i}`);
+        if (enemy.offset() !== undefined) {
+            const enemyOffset = enemy.offset();
+            const enemyWidth = enemy.width();
+            const enemyArr = [enemyOffset.left, enemyOffset.top, enemyOffset.left + enemyWidth, enemyOffset.top + enemyWidth, enemy]
+            enemiesArr.push(enemyArr);
+        }
+    }
+}
+
+function mainTransform() {
+    mainTankArr = [];
+    const main = $('.0');
+    const mainOffset = main.offset();
+    const width = main.width();
+    if (mainOffset !== undefined) {
+        const push = [mainOffset.left, mainOffset.top, mainOffset.left + width, mainOffset.top + width, main];
+        mainTankArr.push(push);
     }
 }
 
@@ -612,7 +723,6 @@ enemy2.setEnemy();
 
 let enemy3 = new MainTank(enemyTankImg, 0, 5, 180);
 enemy3.setEnemy();
-//
-// let enemy2 = new MainTank(enemyTankImg, 0, 13, 180);
-// enemy2.setTank();
+
+
 
