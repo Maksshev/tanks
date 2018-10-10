@@ -23,8 +23,14 @@ let enemyTankImg = `img/tanks_svg/tank-red-4.svg`;
 let enemyCount = 1;
 let mainTankArr = [];
 
+function newGame() {
+    location.reload();
+}
+
 
 function initField() {
+    $('button').remove();
+    body.append(`<button onclick="newGame()">Стоп</button>`);
     const rows = new Array(50).fill('');
     const columns = rows;
     const markUp = `
@@ -32,16 +38,83 @@ function initField() {
         ${rows.map(() => `<tr>${columns.map(() => `<td></td>`).join('')}</tr>`).join('')}    
     </table>
 `;
-    body.html(markUp);
+    body.append(markUp);
     table = $('#table');
     tableWidth = table.width();
     table.height(tableWidth);
     let td = $('#table td:first-of-type');
     tdWidth = td.width();
     tdHeight = td.height();
+    const brick1 = new Obstacles([5, 23], 40, 3, 'brick');
+    brick1.set();
+
+    const metal1 = new Obstacles([0, 23], 5, 3, 'metal');
+    metal1.set();
+
+    const brick2 = new Obstacles([43, 21], 7, 2, 'brick');
+    brick2.set();
+
+    const brick3 = new Obstacles([43, 26], 7, 2, 'brick');
+    brick3.set();
+
+    const metalAi = new Obstacles([41, 26], 2, 24, 'brick');
+    metalAi.set();
+
+    const metalAi1 = new Obstacles([41, 0], 2, 23, 'brick');
+    metalAi1.set();
+
+    const metalAi2 = new Obstacles([7, 26], 2, 24, 'brick');
+    metalAi2.set();
+
+    const metalAi3 = new Obstacles([7, 0], 2, 23, 'brick');
+    metalAi3.set();
+
+    const water = new Obstacles([15, 5], 2, 12, 'water');
+    water.set();
+
+    const water1 = new Obstacles([17, 5], 12, 2, 'water');
+    water1.set();
+
+    const water2 = new Obstacles([29, 5], 2, 12, 'water');
+    water2.set();
+
+    const water3 = new Obstacles([17, 15], 12, 2, 'water');
+    water3.set();
+
+    const water4 = new Obstacles([15, 32], 2, 12, 'water');
+    water4.set();
+
+    const water5 = new Obstacles([17, 32], 12, 2, 'water');
+    water5.set();
+
+    const water6 = new Obstacles([29, 32], 2, 12, 'water');
+    water6.set();
+
+    const water7 = new Obstacles([17, 42], 12, 2, 'water');
+    water7.set();
+
+    const grass = new Obstacles([17, 7], 12, 8);
+    grass.setGrass();
+
+    const grass1 = new Obstacles([17, 34], 12, 8);
+    grass1.setGrass();
+
+    let t = new MainTank(mainTankImg, 45, 37, 0);
+    t.setTank();
+
+    let enemy1 = new MainTank(enemyTankImg, 0, 41, 180);
+    enemy1.setEnemy();
+
+    let enemy = new MainTank(enemyTankImg, 0, 32, 180);
+    enemy.setEnemy();
+
+    let enemy2 = new MainTank(enemyTankImg, 0, 14, 180);
+    enemy2.setEnemy();
+
+    let enemy3 = new MainTank(enemyTankImg, 0, 5, 180);
+    enemy3.setEnemy();
 }
 
-initField();
 
 class MainTank {
     constructor(image, row, column, rotateState) {
@@ -190,7 +263,7 @@ class MainTank {
         let gameInter = setInterval(function () {
 
 
-            let ran = random(1, 6);
+            let ran = random(1, 5);
             if (ran === 1) {
                 let ran2 = random(1, 3);
                 mainTank.rotate(-1 * deg);
@@ -279,7 +352,7 @@ class MainTank {
                         interval = null;
                     }, ran2 * 1000);
                 }
-            } else if (ran === 4 || ran === 5 || ran === 6) {
+            } else if (ran === 4 || ran === 5) {
                 let ran2 = random(1, 3);
                 mainTank.rotate(-1 * deg);
                 mainTank.rotate(180);
@@ -649,80 +722,10 @@ function mainTransform() {
 }
 
 
-const brick1 = new Obstacles([5, 23], 40, 3, 'brick');
-brick1.set();
-
-const metal1 = new Obstacles([0, 23], 5, 3, 'metal');
-metal1.set();
-
-const brick2 = new Obstacles([43, 21], 7, 2, 'brick');
-brick2.set();
-
-const brick3 = new Obstacles([43, 26], 7, 2, 'brick');
-brick3.set();
-
-const metalAi = new Obstacles([4, 32], 1, 3, 'metal');
-metalAi.set();
-
-const metalAi1 = new Obstacles([4, 41], 1, 3, 'metal');
-metalAi1.set();
-
-const metalAi2 = new Obstacles([4, 14], 1, 3, 'metal');
-metalAi2.set();
-
-const metalAi3 = new Obstacles([4, 5], 1, 3, 'metal');
-metalAi3.set();
-
-const water = new Obstacles([15, 5], 2, 12, 'water');
-water.set();
-
-const water1 = new Obstacles([17, 5], 12, 2, 'water');
-water1.set();
-
-const water2 = new Obstacles([29, 5], 2, 12, 'water');
-water2.set();
-
-const water3 = new Obstacles([17, 15], 12, 2, 'water');
-water3.set();
-
-const water4 = new Obstacles([15, 32], 2, 12, 'water');
-water4.set();
-
-const water5 = new Obstacles([17, 32], 12, 2, 'water');
-water5.set();
-
-const water6 = new Obstacles([29, 32], 2, 12, 'water');
-water6.set();
-
-const water7 = new Obstacles([17, 42], 12, 2, 'water');
-water7.set();
-
-const grass = new Obstacles([17, 7], 12, 8);
-grass.setGrass();
-
-const grass1 = new Obstacles([17, 34], 12, 8);
-grass1.setGrass();
 
 
 
 
-
-
-
-let t = new MainTank(mainTankImg, 45, 37, 0);
-t.setTank();
-
-let enemy1 = new MainTank(enemyTankImg, 0, 41, 180);
-enemy1.setEnemy();
-
-let enemy = new MainTank(enemyTankImg, 0, 32, 180);
-enemy.setEnemy();
-
-let enemy2 = new MainTank(enemyTankImg, 0, 14, 180);
-enemy2.setEnemy();
-
-let enemy3 = new MainTank(enemyTankImg, 0, 5, 180);
-enemy3.setEnemy();
 
 
 
