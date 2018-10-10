@@ -27,9 +27,41 @@ function newGame() {
     location.reload();
 }
 
+function winLoose(state) {
+    body.append(`<div id="screener">Вы проиграли</div>`);
+    const table = $('table');
+    if (state === true) {
+        $('#screener').width(table.width()).height(table.height()).text('Фашист повержен!').css({
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'absolute',
+            background: 'black',
+            zIndex: '1',
+            color: 'green',
+            fontSize: '70px',
+            textAlign: 'center'
+        });
+    } else {
+        $('#screener').width(table.width()).height(table.height()).text('Арбайтен, русиш швайн!').css({
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'absolute',
+            background: 'black',
+            zIndex: '1',
+            color: 'red',
+            fontSize: '70px',
+            textAlign: 'center'
+        });
+    }
+    $('button').text('Запустить заново');
+}
+
 
 function initField() {
     $('button').remove();
+    $('table').remove();
     body.append(`<button onclick="newGame()">Стоп</button>`);
     const rows = new Array(50).fill('');
     const columns = rows;
@@ -469,6 +501,11 @@ class Bomb {
                             this.remove();
                         });
                         tankFlag[0][4].remove();
+                        if (!$('.enemy').length) {
+                            winLoose(true);
+                        } else if (!$('.0').length) {
+                            winLoose(false);
+                        }
                         clearInterval(interval);
                     } else {
                         bomb.css('left', '+=3');
@@ -516,6 +553,11 @@ class Bomb {
                             this.remove();
                         });
                         tankFlag[0][4].remove();
+                        if (!$('.enemy').length) {
+                            winLoose(true);
+                        } else if (!$('.0').length) {
+                            winLoose(false);
+                        }
                         clearInterval(interval);
                     } else {
                         bomb.css('top', '+=3');
@@ -563,6 +605,11 @@ class Bomb {
                             this.remove();
                         });
                         tankFlag[0][4].remove();
+                        if (!$('.enemy').length) {
+                            winLoose(true);
+                        } else if (!$('.0').length) {
+                            winLoose(false);
+                        }
                         clearInterval(interval);
                     } else {
                         bomb.css('left', '-=3');
@@ -610,6 +657,11 @@ class Bomb {
                             this.remove();
                         });
                         tankFlag[0][4].remove();
+                        if (!$('.enemy').length) {
+                            winLoose(true);
+                        } else if (!$('.0').length) {
+                            winLoose(false);
+                        }
                         clearInterval(interval);
                     } else {
                         bomb.css('top', '-=3');
