@@ -23,12 +23,7 @@ let enemyTankImg = `img/tanks_svg/tank-red-4.svg`;
 let enemyCount = 1;
 let mainTankArr = [];
 
-$.mobile.loading( "show", {
-    text: "foo",
-    textVisible: true,
-    theme: "z",
-    html: ""
-});
+
 
 
 function newGame() {
@@ -81,7 +76,9 @@ function initField() {
     body.append(markUp);
     table = $('#table');
     tableWidth = table.width();
-    table.height(tableWidth);
+    if ($(window).width() > 1000) {
+        table.height(tableWidth);
+    }
     let td = $('#table td:first-of-type');
     tdWidth = td.width();
     tdHeight = td.height();

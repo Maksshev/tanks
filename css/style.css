@@ -84,6 +84,7 @@ button {
     margin-top: 10px;
     background-color: cadetblue;
     text-align: center;
+    display: none;
 }
 
 #top {
@@ -122,6 +123,24 @@ button {
 
 .wrapper {
     width: 100%;
+}
+
+#fire {
+    display: none;
+}
+
+@media screen and (max-width: 1000px) {
+    .mobile_touch {
+        display: block;
+    }
+    #fire {
+        display: block;
+    }
+    table {
+        width: 100vw;
+        height: 100vh;
+    }
+
 }
 
 
