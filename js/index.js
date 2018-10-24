@@ -23,6 +23,14 @@ let enemyTankImg = `img/tanks_svg/tank-red-4.svg`;
 let enemyCount = 1;
 let mainTankArr = [];
 
+$.mobile.loading( "show", {
+    text: "foo",
+    textVisible: true,
+    theme: "z",
+    html: ""
+});
+
+
 function newGame() {
     location.reload();
 }
@@ -275,6 +283,124 @@ class MainTank {
                 bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width(), false);
             }
         })
+
+        $('.mobile_touch').on('vmousedown', function (e) {
+            deg = 0;
+            if (e.target !== this) {
+                if ($(e.target).attr('id') === 'left') {
+                    mainTank.rotate(-1 * deg);
+                    mainTank.rotate(-90);
+                    deg = -90;
+                    this._rotateState = -90;
+                    if (interval === null) {
+                        interval = setInterval(function () {
+                            let flag = obstaclesArr.reduce(function (acc, curr) {
+                                if (curr[2] + 2 < mainTank.offset().left || (mainTank.offset().top + mainTank.width() < curr[1] || mainTank.offset().top > curr[3])) {
+                                    curr = 1;
+                                } else {
+                                    if (curr[2] - mainTank.offset().left < tdWidth) {
+                                        curr = 0;
+                                    } else {
+                                        curr = 1;
+                                    }
+
+                                }
+                                return acc*curr;
+                            }, 1);
+                            if (mainTank.offset().left > offsetLeft && flag) {
+                                mainTank.css({'right': '+=1'});
+                            }
+                        }, 20);
+                    }
+                } else if ($(e.target).attr('id') === 'top') {
+                    mainTank.rotate({angle: -1 * deg, center: ['48%', '52%']});
+                    deg = 0;
+                    this._rotateState = 0;
+                    if (interval === null) {
+                        interval = setInterval(function () {
+                            let flag = obstaclesArr.reduce(function (acc, curr) {
+                                if (curr[3] + 1 < mainTank.offset().top || (mainTank.offset().left + mainTank.width() < curr[0] + 1 || mainTank.offset().left > curr[2] + 1)) {
+                                    curr = 1;
+                                } else {
+                                    if (curr[3] + 1 - mainTank.offset().top < tdWidth) {
+                                        curr = 0;
+                                    } else {
+                                        curr = 1;
+                                    }
+                                }
+                                return acc*curr;
+                            }, 1);
+                            if (mainTank.offset().top > offsetTop && flag) {
+                                mainTank.css({'top': '-=1'});
+                            }
+                        }, 20);
+                    }
+                } else if ($(e.target).attr('id') === 'right') {
+                    mainTank.rotate(-1 * deg);
+                    mainTank.rotate(90);
+                    deg = 90;
+                    this._rotateState = 90;
+                    if (interval === null) {
+                        interval = setInterval(function () {
+                            let flag = obstaclesArr.reduce(function (acc, curr) {
+                                if (curr[0] > mainTank.offset().left + mainTank.width() || (mainTank.offset().top + mainTank.width() < curr[1] || mainTank.offset().top > curr[3])) {
+                                    curr = 1;
+                                } else {
+                                    if (mainTank.offset().left - curr[0] < tdWidth) {
+                                        curr = 0;
+                                    } else {
+                                        curr = 1;
+                                    }
+                                }
+                                return acc*curr;
+                            }, 1);
+                            if ((mainTank.offset().left + mainTank.width()) < offsetRight && flag) {
+                                mainTank.css({'right': '-=1'});
+                            }
+                        }, 20);
+                    }
+                } else if ($(e.target).attr('id') === 'bottom') {
+                    mainTank.rotate(-1 * deg);
+                    mainTank.rotate(180);
+                    deg = 180;
+                    this._rotateState = 180;
+                    if (interval === null) {
+                        interval = setInterval(function () {
+                            let flag = obstaclesArr.reduce(function (acc, curr) {
+                                if (curr[1] - 1 > (mainTank.offset().top + mainTank.width()) || (mainTank.offset().left + mainTank.width() < curr[0] + 1 || mainTank.offset().left > curr[2] + 1)) {
+                                    curr = 1;
+                                } else {
+                                    if ((mainTank.offset().top + mainTank.width() - curr[1] + 1) < tdWidth) {
+                                        curr = 0;
+                                    } else {
+                                        curr = 1;
+                                    }
+                                }
+                                return acc*curr;
+                            }, 1);
+                            if ((mainTank.offset().top + mainTank.width()) < offsetBottom && flag) {
+                                mainTank.css({'top': '+=1'});
+                            }
+                        }, 20);
+                    }
+                }
+            }}).on('vmouseup', function (e) {
+
+            clearInterval(interval);
+            interval = null;
+            if (e.which === 32) {
+                let bomb = new Bomb(true);
+                bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width(), false);
+            }
+        }).on('vclick', function (e) {
+            if (e.target !== this) {
+                if ($(e.target).attr('id') === 'fire') {
+                    let bomb = new Bomb(true);
+                    bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width(), false);
+                }
+            }
+        })
+
     }
 
     setEnemy() {
