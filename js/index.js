@@ -284,7 +284,7 @@ class MainTank {
             }
         })
 
-        $('.mobile_touch').on('vmousedown', function (e) {
+        $('.mobile_touch').bind('touchstart', function (e) {
             deg = 0;
             if (e.target !== this) {
                 if ($(e.target).attr('id') === 'left') {
@@ -384,7 +384,7 @@ class MainTank {
                         }, 20);
                     }
                 }
-            }}).on('vmouseup', function (e) {
+            }}).bind('touchend', function (e) {
 
             clearInterval(interval);
             interval = null;
