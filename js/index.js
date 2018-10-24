@@ -392,7 +392,7 @@ class MainTank {
                 let bomb = new Bomb(true);
                 bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width(), false);
             }
-        }).on('vclick', function (e) {
+        }).on('tap', function (e) {
             if (e.target !== this) {
                 if ($(e.target).attr('id') === 'fire') {
                     let bomb = new Bomb(true);
