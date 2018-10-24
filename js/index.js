@@ -395,8 +395,8 @@ class MainTank {
         })
 
 
-            $('#fire').on('tap', function (e) {
-                console.log('valera')
+            $('#fire').bind('touchstart', function (e) {
+                console.log('valera');
                     let bomb = new Bomb(true);
                     bomb.startBomb(deg, mainTank.offset(), mainTank.width(), false);
         })
