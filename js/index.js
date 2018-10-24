@@ -285,6 +285,7 @@ class MainTank {
         })
 
         $('.mobile_touch').bind('touchstart', function (e) {
+            e.preventDefault();
             deg = 0;
             if (e.target !== this) {
                 if ($(e.target).attr('id') === 'left') {
@@ -385,7 +386,7 @@ class MainTank {
                     }
                 }
             }}).bind('touchend', function (e) {
-
+                e.preventDefault();
             clearInterval(interval);
             interval = null;
             if (e.which === 32) {
@@ -396,6 +397,7 @@ class MainTank {
 
 
             $('#fire').bind('touchstart', function (e) {
+                e.preventDefault();
                 console.log('valera');
                     let bomb = new Bomb(true);
                     bomb.startBomb(deg, mainTank.offset(), mainTank.width(), false);
