@@ -392,13 +392,14 @@ class MainTank {
                 let bomb = new Bomb(true);
                 bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width(), false);
             }
-        }).on('tap', function (e) {
-            if (e.target !== this) {
-                if ($(e.target).attr('id') === 'fire') {
+        })
+
+
+            $('#fire').on('tap', function (e) {
                     let bomb = new Bomb(true);
                     bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width(), false);
-                }
-            }
+
+
         })
 
     }
