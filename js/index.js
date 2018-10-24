@@ -396,10 +396,9 @@ class MainTank {
 
 
             $('#fire').on('tap', function (e) {
+                console.log('valera')
                     let bomb = new Bomb(true);
-                    bomb.startBomb(this._rotateState, mainTank.offset(), mainTank.width(), false);
-
-
+                    bomb.startBomb(deg, mainTank.offset(), mainTank.width(), false);
         })
 
     }
