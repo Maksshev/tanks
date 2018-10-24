@@ -78,6 +78,7 @@ button {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    z-index: 999;
 }
 
 .mobile_touch div {
@@ -119,6 +120,7 @@ button {
     bottom: 100px;
     right: 80vw;
     border-radius: 50%;
+    z-index: 999;
 }
 
 .wrapper {
