@@ -8,15 +8,10 @@ let offsetTop;
 let offsetBottom;
 let offsetRight;
 let offsetLeft;
-let obstaclesOffsetLeft = [];
-let obstaclesOffsetRight = [];
-let obstaclesOffsetTop;
-let obstaclesOffsetBottom;
 let obstacles;
 let obstaclesArr = [];
 let obstaclesBomb;
 let obstaclesBombArr = [];
-let enemies;
 let enemiesArr = [];
 let mainTankImg = `img/tanks_svg/tank-yellow-1.svg`;
 let enemyTankImg = `img/tanks_svg/tank-red-4.svg`;
@@ -26,15 +21,13 @@ let mainTankArr = [];
 
 
 
-function newGame() {
-    location.reload();
-}
+
 
 function winLoose(state) {
-    body.append(`<div id="screener">Вы проиграли</div>`);
+    body.append(`<div id="screener">You lost</div>`);
     const table = $('table');
     if (state === true) {
-        $('#screener').width(table.width()).height(table.height()).text('Фашист повержен!').css({
+        $('#screener').width(table.width()).height(table.height()).text('You won!').css({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -46,7 +39,7 @@ function winLoose(state) {
             textAlign: 'center'
         });
     } else {
-        $('#screener').width(table.width()).height(table.height()).text('Арбайтен, русиш швайн!').css({
+        $('#screener').width(table.width()).height(table.height()).text('You lost!').css({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -58,14 +51,14 @@ function winLoose(state) {
             textAlign: 'center'
         });
     }
-    $('button').text('Запустить заново');
+    $('button').text('Play again');
 }
 
 
 function initField() {
     $('button').remove();
     $('table').remove();
-    body.append(`<button onclick="newGame()">Стоп</button>`);
+    body.append(`<button onclick="newGame()">Stop</button>`);
     const rows = new Array(50).fill('');
     const columns = rows;
     const markUp = `
@@ -885,6 +878,10 @@ function enemiesTransform() {
             enemiesArr.push(enemyArr);
         }
     }
+}
+
+function newGame() {
+    location.reload();
 }
 
 function mainTransform() {
